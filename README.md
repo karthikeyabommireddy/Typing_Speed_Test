@@ -2,7 +2,9 @@
 
 A beautiful, interactive typing speed test application built with React, featuring stunning animations, particle effects, and comprehensive performance analytics.
 
-![SpeedType Demo](https://img.shields.io/badge/Status-Active-brightgreen) ![React](https://img.shields.io/badge/React-18.3.1-blue) ![Vite](https://img.shields.io/badge/Vite-5.4.2-purple) ![Tailwind](https://img.shields.io/badge/TailwindCSS-3.4.1-cyan)
+![SpeedType Demo](https://img.shields.io/badge/Status-Active-brightgreen) ![React](https://img.shields.io/badge/React-18.3.1-blue) ![Vite](https://img.shields.io/badge/Vite-5.4.2-purple) ![Tailwind](https://img.shields.io/badge/TailwindCSS-3.4.1-cyan) 
+
+[Live Link](https://typingspeedtestbykarthikeya.netlify.app/)
 
 ## ✨ Features
 
