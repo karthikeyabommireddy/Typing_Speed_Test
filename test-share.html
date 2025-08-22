@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Share Functionality</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .test-container {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+        button {
+            padding: 1rem 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 2rem;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+        button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        button:disabled {
+            cursor: wait;
+            opacity: 0.7;
+        }
+        .success {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+            color: #22c55e;
+        }
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+        }
+        .copying {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Share Functionality Test</h1>
+        <p>Test the improved share button functionality</p>
+        
+        <div>
+            <h3>Sample Test Results:</h3>
+            <p>🚀 Speed: 75 WPM</p>
+            <p>🎯 Accuracy: 95%</p>
+            <p>🏆 Level: Advanced</p>
+        </div>
+        
+        <button id="shareBtn">Share Results</button>
+        
+        <div style="margin-top: 2rem;">
+            <h4>What this button does:</h4>
+            <ul style="text-align: left; max-width: 400px;">
+                <li>First tries Web Share API (mobile devices)</li>
+                <li>Falls back to modern Clipboard API</li>
+                <li>Falls back to legacy copy method</li>
+                <li>Shows visual feedback for all states</li>
+                <li>Handles errors gracefully</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let copyStatus = 'idle';
+        
+        function updateButton() {
+            const btn = document.getElementById('shareBtn');
+            btn.className = '';
+            
+            switch(copyStatus) {
+                case 'copying':
+                    btn.textContent = 'Copying...';
+                    btn.className = 'copying';
+                    btn.disabled = true;
+                    break;
+                case 'success':
+                    btn.textContent = 'Copied!';
+                    btn.className = 'success';
+                    btn.disabled = false;
+                    break;
+                case 'error':
+                    btn.textContent = 'Copy Failed';
+                    btn.className = 'error';
+                    btn.disabled = false;
+                    break;
+                default:
+                    btn.textContent = 'Share Results';
+                    btn.disabled = false;
+            }
+        }
+        
+        async function handleShareResults() {
+            copyStatus = 'copying';
+            updateButton();
+            
+            const shareText = `I just completed a typing test!\n🚀 Speed: 75 WPM\n🎯 Accuracy: 95%\n🏆 Level: Advanced\n\nTry it yourself at SpeedType!`;
+            const shareData = {
+                title: 'My Typing Test Results - SpeedType',
+                text: shareText,
+                url: window.location.origin
+            };
+            
+            try {
+                // Try Web Share API first (mobile-friendly)
+                if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                    await navigator.share(shareData);
+                    copyStatus = 'success';
+                    updateButton();
+                    return;
+                }
+                
+                // Check if the Clipboard API is available
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(shareText);
+                    copyStatus = 'success';
+                } else {
+                    // Fallback for older browsers or insecure contexts
+                    const textArea = document.createElement('textarea');
+                    textArea.value = shareText;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        copyStatus = 'success';
+                    } else {
+                        copyStatus = 'error';
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                copyStatus = 'error';
+            }
+            
+            updateButton();
+            
+            // Reset status after 2 seconds
+            setTimeout(() => {
+                copyStatus = 'idle';
+                updateButton();
+            }, 2000);
+        }
+        
+        document.getElementById('shareBtn').addEventListener('click', handleShareResults);
+    </script>
+</body>
+</html>
